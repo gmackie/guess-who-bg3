@@ -1,0 +1,62 @@
+name: Build PAK
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download LSLib
+        run: |
+          $releases = Invoke-RestMethod -Uri "https://api.github.com/repos/Norbyte/lslib/releases/latest"
+          $asset = $releases.assets | Where-Object { $_.name -like "ExportTool-*.zip" } | Select-Object -First 1
+          Invoke-WebRequest -Uri $asset.browser_download_url -OutFile lslib.zip
+          Expand-Archive -Path lslib.zip -DestinationPath lslib
+
+      - name: Build PAK
+        run: |
+          $modName = "MyRomanceGuessWho"
+          
+          # Create a temp directory with proper mod structure
+          New-Item -ItemType Directory -Path "pakroot" -Force
+          
+          # Copy mod files (exclude non-mod files)
+          Copy-Item -Path "Mods" -Destination "pakroot/Mods" -Recurse
+          Copy-Item -Path "Public" -Destination "pakroot/Public" -Recurse
+          Copy-Item -Path "ScriptExtender" -Destination "pakroot/ScriptExtender" -Recurse
+          Copy-Item -Path "Data" -Destination "pakroot/Data" -Recurse
+          
+          # Create PAK
+          ./lslib/divine.exe -g bg3 -a create-package -s pakroot -d "$modName.pak" -c lz4
+          
+          # Verify
+          if (Test-Path "$modName.pak") {
+            Write-Host "Successfully created $modName.pak"
+            Get-Item "$modName.pak" | Select-Object Name, Length
+          } else {
+            Write-Error "Failed to create PAK file"
+            exit 1
+          }
+
+      - name: Upload PAK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MyRomanceGuessWho
+          path: MyRomanceGuessWho.pak
+
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: MyRomanceGuessWho.pak
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
