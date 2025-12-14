@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<save>
+    <version major="4" minor="0" revision="9" build="331"/>
+    <region id="Goals">
+        <node id="root">
+            <children>
+                <node id="Goal">
+                    <attribute id="Uuid" type="FixedString" value="c3d4e5f6-7890-1234-5678-abcdef123456"/>
+                    <children>
+                        <node id="OsirisGoal">
+                            <attribute id="FileName" type="LSString" value="ROM_GuessWho"/>
+                            <attribute id="Priority" type="int32" value="0"/>
+                            <children>
+                                <node id="KBSection">
+                                    <attribute id="Type" type="FixedString" value="Procs"/>
+                                    <children>
+                                        <node id="Entry">
+                                            <attribute id="Content" type="LSString" value="PROC_GMK_GuessWho_Start((CHARACTERGUID)_Owner)"/>
+                                        </node>
+                                        <node id="Entry">
+                                            <attribute id="Content" type="LSString" value="PROC_GMK_GuessWho_Answer((CHARACTERGUID)_Owner,(STRING)_Answer)"/>
+                                        </node>
+                                        <node id="Entry">
+                                            <attribute id="Content" type="LSString" value="PROC_GMK_GuessWho_ResetNight()"/>
+                                        </node>
+                                    </children>
+                                </node>
+                                <node id="KBSection">
+                                    <attribute id="Type" type="FixedString" value="KBs"/>
+                                    <children>
+                                        <node id="Entry">
+                                            <attribute id="Content" type="LSString" value="IF ItemTemplateUsed(GMK_Campfire_GuessWho,_Owner) THEN PROC_GMK_GuessWho_Start(_Owner);"/>
+                                        </node>
+                                        <node id="Entry">
+                                            <attribute id="Content" type="LSString" value="IF ItemTemplateUsed(GMK_AnswerYes,_Owner) THEN PROC_GMK_GuessWho_Answer(_Owner,&quot;YES&quot;);"/>
+                                        </node>
+                                        <node id="Entry">
+                                            <attribute id="Content" type="LSString" value="IF ItemTemplateUsed(GMK_AnswerNo,_Owner) THEN PROC_GMK_GuessWho_Answer(_Owner,&quot;NO&quot;);"/>
+                                        </node>
+                                        <node id="Entry">
+                                            <attribute id="Content" type="LSString" value="IF LevelGameplayStarted(_Level,1) THEN PROC_GMK_GuessWho_ResetNight();"/>
+                                        </node>
+                                    </children>
+                                </node>
+                            </children>
+                        </node>
+                    </children>
+                </node>
+            </children>
+        </node>
+    </region>
+</save>
