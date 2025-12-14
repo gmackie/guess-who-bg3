@@ -1,0 +1,30 @@
+{
+  "_README": "Game settings - adjust these to change difficulty and behavior",
+
+  "gameplay": {
+    "_comment": "Core gameplay settings",
+    "RequireSuccessScore": 3,
+    "QuestionsPerRound": 5,
+    "OncePerNight": true
+  },
+
+  "romance": {
+    "_comment": "Romance behavior settings",
+    "BumpApprovalToMax": true,
+    "ApprovalBoostAmount": 100,
+    "EnforceMonogamy": true,
+    "MultiRomanceAllowed": false,
+    "CloseAvailableFlags": true
+  },
+
+  "messages": {
+    "_comment": "Customize the text shown to players",
+    "GameStart": "Campfire Guess Who? begins. A figure sits across the firelight...",
+    "QuestionPrompt": "[Guess Who? %d/%d]\n%s\nUse 'Answer: YES' or 'Answer: NO'.",
+    "SuccessMessage": "You scored %d/%d. You and %s share a deep connection tonight.",
+    "FailureMessage": "You scored %d/%d with %s. The moment wasn't quite right.",
+    "AlreadyPlayedTonight": "You've already played tonight. Try again after your next Long Rest.",
+    "NoEligibleCompanions": "No romance-eligible companions are benched tonight.",
+    "NoActiveSession": "No active Guess Who? round. Use the starter item to begin."
+  }
+}

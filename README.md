@@ -113,41 +113,66 @@ This mod is fully multiplayer compatible:
 
 ## Configuration
 
-Edit `Data/companions.json` to customize:
+All game data is stored in easy-to-edit JSON files in the `Data/` folder.
 
-### Questions
+### Questions (`Data/questions.json`)
+
+Add or edit trivia questions:
 
 ```json
-"questions": {
-  "ValuesMercy": "Values mercy over vengeance?",
-  "LikesSnark": "Appreciates sharp, snarky humor?",
-  ...
+{
+  "questions": [
+    { "key": "ValuesMercy", "text": "Values mercy over vengeance?" },
+    { "key": "LikesSnark", "text": "Appreciates sharp, snarky humor?" }
+  ]
 }
 ```
 
-### Companion Traits
+### Companion Traits (`Data/traits.json`)
 
 Set `true` if YES is correct, `false` if NO is correct:
 
 ```json
-"traits": {
+{
   "Shadowheart": {
+    "_description": "Half-elf cleric of Shar, secretive and guarded",
     "ValuesMercy": true,
-    "LikesSnark": false,
-    ...
+    "LikesSnark": false
   }
 }
 ```
 
-### Game Settings
+### Game Settings (`Data/config.json`)
 
 ```json
-"config": {
-  "RequireSuccessScore": 3,      // Correct answers needed to win (out of 5)
-  "BumpApprovalToMax": true,     // Auto-increase approval on success
-  "EnforceMonogamy": true,       // Clear other romances on success
-  "MultiRomanceAllowed": false,  // Allow multiple active romances
-  "OncePerNight": true           // Limit to once per Long Rest
+{
+  "gameplay": {
+    "RequireSuccessScore": 3,
+    "QuestionsPerRound": 5,
+    "OncePerNight": true
+  },
+  "romance": {
+    "BumpApprovalToMax": true,
+    "EnforceMonogamy": true,
+    "MultiRomanceAllowed": false
+  },
+  "messages": {
+    "GameStart": "Campfire Guess Who? begins...",
+    "SuccessMessage": "You scored %d/%d. You and %s share a deep connection."
+  }
+}
+```
+
+### Companions (`Data/companions.json`)
+
+Enable/disable companions or add localized name variants:
+
+```json
+{
+  "companions": [
+    { "key": "Shadowheart", "names": ["Shadowheart"], "enabled": true },
+    { "key": "Minthara", "names": ["Minthara"], "enabled": false }
+  ]
 }
 ```
 
@@ -186,8 +211,11 @@ divine.exe -g bg3 --action create-package --source "C:\path\to\MyRomanceGuessWho
 
 ```
 MyRomanceGuessWho/
-├── Data/
-│   └── companions.json              # Editable companion data & questions
+├── Data/                            # Editable game data (JSON)
+│   ├── companions.json              # Companion definitions & romance flags
+│   ├── questions.json               # Trivia questions
+│   ├── traits.json                  # Per-companion answers
+│   └── config.json                  # Game settings & messages
 ├── Mods/MyRomanceGuessWho/
 │   └── meta.lsx                     # Mod metadata
 ├── Public/MyRomanceGuessWho/

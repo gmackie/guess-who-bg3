@@ -1,0 +1,55 @@
+{
+  "_README": "Define trivia questions here. Each question needs a unique key and the text shown to players.",
+  "_HOWTO": "To add a new question: 1) Add it here with a unique key, 2) Add answers for each companion in traits.json",
+
+  "questions": [
+    {
+      "key": "ValuesMercy",
+      "text": "Values mercy over vengeance?"
+    },
+    {
+      "key": "LikesSnark",
+      "text": "Appreciates sharp, snarky humor?"
+    },
+    {
+      "key": "HatesAuthority",
+      "text": "Chafes against rules and authority?"
+    },
+    {
+      "key": "PrefersSubtlety",
+      "text": "Prefers subtlety to brute force?"
+    },
+    {
+      "key": "EnjoysRelics",
+      "text": "Fascinated by relics and forbidden lore?"
+    },
+    {
+      "key": "OpenFaith",
+      "text": "Open and public about their faith?"
+    },
+    {
+      "key": "ProtectsInnocents",
+      "text": "Protects innocents even at personal risk?"
+    },
+    {
+      "key": "LovesRisk",
+      "text": "Loves risky gambits?"
+    },
+    {
+      "key": "ValuesHonor",
+      "text": "Places high value on personal honor?"
+    },
+    {
+      "key": "EnjoysNature",
+      "text": "Feels a deep connection to nature?"
+    },
+    {
+      "key": "SeeksPower",
+      "text": "Actively seeks personal power?"
+    },
+    {
+      "key": "ValuesLoyalty",
+      "text": "Values loyalty above all else?"
+    }
+  ]
+}

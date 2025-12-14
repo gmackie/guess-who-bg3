@@ -1,0 +1,132 @@
+{
+  "_README": "Define companion answers here. For each question, set true if YES is correct, false if NO is correct.",
+  "_HOWTO": "When adding a new question in questions.json, add the answer for each companion here.",
+
+  "Shadowheart": {
+    "_description": "Half-elf cleric of Shar, secretive and guarded but with a hidden soft side",
+    "ValuesMercy": true,
+    "LikesSnark": false,
+    "HatesAuthority": false,
+    "PrefersSubtlety": true,
+    "EnjoysRelics": true,
+    "OpenFaith": false,
+    "ProtectsInnocents": true,
+    "LovesRisk": false,
+    "ValuesHonor": false,
+    "EnjoysNature": false,
+    "SeeksPower": false,
+    "ValuesLoyalty": true
+  },
+
+  "Laezel": {
+    "_description": "Githyanki warrior, fierce and proud, devoted to her queen",
+    "ValuesMercy": false,
+    "LikesSnark": false,
+    "HatesAuthority": false,
+    "PrefersSubtlety": false,
+    "EnjoysRelics": false,
+    "OpenFaith": false,
+    "ProtectsInnocents": false,
+    "LovesRisk": true,
+    "ValuesHonor": true,
+    "EnjoysNature": false,
+    "SeeksPower": true,
+    "ValuesLoyalty": true
+  },
+
+  "Astarion": {
+    "_description": "High elf vampire spawn, charming and manipulative, seeking freedom",
+    "ValuesMercy": false,
+    "LikesSnark": true,
+    "HatesAuthority": true,
+    "PrefersSubtlety": true,
+    "EnjoysRelics": false,
+    "OpenFaith": false,
+    "ProtectsInnocents": false,
+    "LovesRisk": true,
+    "ValuesHonor": false,
+    "EnjoysNature": false,
+    "SeeksPower": true,
+    "ValuesLoyalty": false
+  },
+
+  "Karlach": {
+    "_description": "Tiefling barbarian, warm-hearted despite her infernal engine",
+    "ValuesMercy": true,
+    "LikesSnark": true,
+    "HatesAuthority": true,
+    "PrefersSubtlety": false,
+    "EnjoysRelics": false,
+    "OpenFaith": false,
+    "ProtectsInnocents": true,
+    "LovesRisk": true,
+    "ValuesHonor": true,
+    "EnjoysNature": false,
+    "SeeksPower": false,
+    "ValuesLoyalty": true
+  },
+
+  "Gale": {
+    "_description": "Human wizard, scholarly and passionate about magic, carries a dark secret",
+    "ValuesMercy": true,
+    "LikesSnark": true,
+    "HatesAuthority": false,
+    "PrefersSubtlety": true,
+    "EnjoysRelics": true,
+    "OpenFaith": false,
+    "ProtectsInnocents": true,
+    "LovesRisk": false,
+    "ValuesHonor": true,
+    "EnjoysNature": false,
+    "SeeksPower": true,
+    "ValuesLoyalty": true
+  },
+
+  "Wyll": {
+    "_description": "Human warlock, the Blade of Frontiers, heroic and noble",
+    "ValuesMercy": true,
+    "LikesSnark": false,
+    "HatesAuthority": false,
+    "PrefersSubtlety": false,
+    "EnjoysRelics": false,
+    "OpenFaith": false,
+    "ProtectsInnocents": true,
+    "LovesRisk": false,
+    "ValuesHonor": true,
+    "EnjoysNature": false,
+    "SeeksPower": false,
+    "ValuesLoyalty": true
+  },
+
+  "Halsin": {
+    "_description": "Wood elf druid, former First Druid of the Grove, gentle giant",
+    "ValuesMercy": true,
+    "LikesSnark": true,
+    "HatesAuthority": true,
+    "PrefersSubtlety": false,
+    "EnjoysRelics": false,
+    "OpenFaith": false,
+    "ProtectsInnocents": true,
+    "LovesRisk": false,
+    "ValuesHonor": true,
+    "EnjoysNature": true,
+    "SeeksPower": false,
+    "ValuesLoyalty": true
+  },
+
+  "Minthara": {
+    "_description": "Drow paladin, ruthless and ambitious, servant of the Absolute",
+    "ValuesMercy": false,
+    "LikesSnark": false,
+    "HatesAuthority": false,
+    "PrefersSubtlety": true,
+    "EnjoysRelics": true,
+    "OpenFaith": false,
+    "ProtectsInnocents": false,
+    "LovesRisk": true,
+    "ValuesHonor": false,
+    "EnjoysNature": false,
+    "SeeksPower": true,
+    "ValuesLoyalty": false
+  }
+}

@@ -32,9 +32,17 @@ local function isPlayer(c)
     return Osi.IsPlayer(c) == 1
 end
 
--- Display text to player
+-- Display text to player (uses Messages config if available)
 local function say(p, t)
     Osi.DisplayText(p, t)
+end
+
+-- Get message from config or use fallback
+local function getMessage(key, fallback)
+    if Messages and Messages[key] then
+        return Messages[key]
+    end
+    return fallback
 end
 
 -- Build name lookup index from CompanionRoster
@@ -145,14 +153,16 @@ end
 -- Display current question to player
 local function promptQuestion(player, traitKey, idx, total)
     local q = GuessWhoTraitText[traitKey] or traitKey
-    say(player, string.format("[Guess Who? %d/%d]\n%s\nUse 'Answer: YES' or 'Answer: NO'.", idx, total, q))
+    local template = getMessage("QuestionPrompt", "[Guess Who? %d/%d]\n%s\nUse 'Answer: YES' or 'Answer: NO'.")
+    say(player, string.format(template, idx, total, q))
 end
 
 -- Set romance for the chosen companion
 local function setRomanceFor(player, compUuid, compKey)
-    -- (A) Approval bump (optional, global scope=0)
+    -- (A) Approval bump (optional)
     if Config.BumpApprovalToMax then
-        Osi.ChangeApprovalRating(compUuid, player, 0, 100)
+        local amount = Config.ApprovalBoostAmount or 100
+        Osi.ChangeApprovalRating(compUuid, player, 0, amount)
     end
 
     -- (B) Enforce monogamy by clearing all others
@@ -171,9 +181,11 @@ local function setRomanceFor(player, compUuid, compKey)
     end
 
     -- (D) Optionally close "available" flags (prevents re-select prompts)
-    local avail = RomanceAvailableFlags[compKey]
-    if avail then
-        Osi.SetFlag(avail, 0, player)
+    if Config.CloseAvailableFlags ~= false then
+        local avail = RomanceAvailableFlags[compKey]
+        if avail then
+            Osi.SetFlag(avail, 0, player)
+        end
     end
 end
 
@@ -182,14 +194,17 @@ local function endRound(player, s)
     removeAnswerItems(player)
 
     local compKey = keyByUuid(s.targetCompUuid) or "Unknown"
-    local score   = s.score
+    local score = s.score
+    local total = #s.qOrder
     local success = score >= (Config.RequireSuccessScore or 3)
 
     if success then
         setRomanceFor(player, s.targetCompUuid, s.compKey)
-        say(player, string.format("You scored %d/5. You and %s share a deep connection tonight.", score, compKey))
+        local template = getMessage("SuccessMessage", "You scored %d/%d. You and %s share a deep connection tonight.")
+        say(player, string.format(template, score, total, compKey))
     else
-        say(player, string.format("You scored %d/5 with %s. The moment wasn't quite right.", score, compKey))
+        local template = getMessage("FailureMessage", "You scored %d/%d with %s. The moment wasn't quite right.")
+        say(player, string.format(template, score, total, compKey))
     end
 
     sessions[pid(player)] = nil
@@ -221,14 +236,14 @@ function GuessWho.Start(player)
 
     -- Check if already played tonight
     if Config.OncePerNight and nightlyPlayed[p] then
-        say(player, "You've already played tonight. Try again after your next Long Rest.")
+        say(player, getMessage("AlreadyPlayedTonight", "You've already played tonight. Try again after your next Long Rest."))
         return
     end
 
     -- Get list of eligible companions (benched ones)
     local candidates = benchedCompanionsFor(player)
     if #candidates == 0 then
-        say(player, "No romance-eligible companions are benched tonight.")
+        say(player, getMessage("NoEligibleCompanions", "No romance-eligible companions are benched tonight."))
         return
     end
 
@@ -239,8 +254,9 @@ function GuessWho.Start(player)
     -- Get shuffled questions
     local qOrder = shuffledTraitKeys(compKey)
 
-    -- Limit to 5 questions
-    local total = math.min(#qOrder, 5)
+    -- Limit to configured questions per round
+    local questionsPerRound = Config.QuestionsPerRound or 5
+    local total = math.min(#qOrder, questionsPerRound)
     while #qOrder > total do
         table.remove(qOrder)
     end
@@ -261,7 +277,7 @@ function GuessWho.Start(player)
 
     -- Add answer items and start game
     addAnswerItems(player)
-    say(player, "Campfire Guess Who? begins. A figure sits across the firelight...")
+    say(player, getMessage("GameStart", "Campfire Guess Who? begins. A figure sits across the firelight..."))
     promptQuestion(player, qOrder[1], 1, total)
 end
 
@@ -270,7 +286,7 @@ function GuessWho.Answer(player, isYes)
     local s = sessions[pid(player)]
 
     if not s then
-        say(player, "No active Guess Who? round. Use the starter item to begin.")
+        say(player, getMessage("NoActiveSession", "No active Guess Who? round. Use the starter item to begin."))
         return
     end
 

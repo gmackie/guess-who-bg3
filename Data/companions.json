@@ -1,43 +1,51 @@
 {
-  "_README": "This file defines companion data for Campfire Guess Who? Edit traits and questions here!",
+  "_README": "Companion definitions and romance flags. Only edit this if adding new companions or fixing localization.",
+  "_WARNING": "The romanceFlags are actual BG3 game flags - don't change unless you know what you're doing!",
 
   "companions": [
     {
       "key": "Shadowheart",
-      "names": ["Shadowheart"]
+      "names": ["Shadowheart"],
+      "enabled": true
     },
     {
       "key": "Laezel",
-      "names": ["Lae'zel", "Laezel"]
+      "names": ["Lae'zel", "Laezel"],
+      "enabled": true
     },
     {
       "key": "Astarion",
-      "names": ["Astarion"]
+      "names": ["Astarion"],
+      "enabled": true
     },
     {
       "key": "Karlach",
-      "names": ["Karlach"]
+      "names": ["Karlach"],
+      "enabled": true
     },
     {
       "key": "Gale",
-      "names": ["Gale"]
+      "names": ["Gale"],
+      "enabled": true
     },
     {
       "key": "Wyll",
-      "names": ["Wyll"]
+      "names": ["Wyll"],
+      "enabled": true
     },
     {
       "key": "Halsin",
-      "names": ["Halsin"]
+      "names": ["Halsin"],
+      "enabled": true
     },
     {
       "key": "Minthara",
-      "names": ["Minthara"]
+      "names": ["Minthara"],
+      "enabled": true
     }
   ],
 
   "romanceFlags": {
-    "_comment": "These are the actual game flags - don't change unless you know what you're doing",
     "Shadowheart": "Shadowheart_RomanceActive",
     "Laezel": "LaeZel_RomanceActive",
     "Astarion": "Astarion_RomanceActive",
@@ -49,7 +57,6 @@
   },
 
   "romanceAvailableFlags": {
-    "_comment": "Optional flags to close romance routes after selection",
     "Shadowheart": "Shadowheart_RomanceAvailable",
     "Laezel": "LaeZel_RomanceAvailable",
     "Astarion": "Astarion_RomanceAvailable",
@@ -58,118 +65,5 @@
     "Wyll": "Wyll_RomanceAvailable",
     "Halsin": "Halsin_RomanceAvailable",
     "Minthara": "Minthara_RomanceAvailable"
-  },
-
-  "questions": {
-    "_comment": "Each question has a key and display text. Used by traits below.",
-    "ValuesMercy": "Values mercy over vengeance?",
-    "LikesSnark": "Appreciates sharp, snarky humor?",
-    "HatesAuthority": "Chafes against rules and authority?",
-    "PrefersSubtlety": "Prefers subtlety to brute force?",
-    "EnjoysRelics": "Fascinated by relics and forbidden lore?",
-    "OpenFaith": "Open and public about their faith?",
-    "ProtectsInnocents": "Protects innocents even at risk?",
-    "LovesRisk": "Loves risky gambits?"
-  },
-
-  "traits": {
-    "_comment": "For each companion, set true if YES is correct, false if NO is correct",
-
-    "Shadowheart": {
-      "ValuesMercy": true,
-      "LikesSnark": false,
-      "HatesAuthority": false,
-      "PrefersSubtlety": true,
-      "EnjoysRelics": true,
-      "OpenFaith": false,
-      "ProtectsInnocents": true,
-      "LovesRisk": false
-    },
-
-    "Laezel": {
-      "ValuesMercy": false,
-      "LikesSnark": false,
-      "HatesAuthority": false,
-      "PrefersSubtlety": false,
-      "EnjoysRelics": false,
-      "OpenFaith": false,
-      "ProtectsInnocents": false,
-      "LovesRisk": true
-    },
-
-    "Astarion": {
-      "ValuesMercy": false,
-      "LikesSnark": true,
-      "HatesAuthority": true,
-      "PrefersSubtlety": true,
-      "EnjoysRelics": false,
-      "OpenFaith": false,
-      "ProtectsInnocents": false,
-      "LovesRisk": true
-    },
-
-    "Karlach": {
-      "ValuesMercy": true,
-      "LikesSnark": true,
-      "HatesAuthority": true,
-      "PrefersSubtlety": false,
-      "EnjoysRelics": false,
-      "OpenFaith": false,
-      "ProtectsInnocents": true,
-      "LovesRisk": true
-    },
-
-    "Gale": {
-      "ValuesMercy": true,
-      "LikesSnark": true,
-      "HatesAuthority": false,
-      "PrefersSubtlety": true,
-      "EnjoysRelics": true,
-      "OpenFaith": false,
-      "ProtectsInnocents": true,
-      "LovesRisk": false
-    },
-
-    "Wyll": {
-      "ValuesMercy": true,
-      "LikesSnark": false,
-      "HatesAuthority": false,
-      "PrefersSubtlety": false,
-      "EnjoysRelics": false,
-      "OpenFaith": false,
-      "ProtectsInnocents": true,
-      "LovesRisk": false
-    },
-
-    "Halsin": {
-      "ValuesMercy": true,
-      "LikesSnark": true,
-      "HatesAuthority": true,
-      "PrefersSubtlety": false,
-      "EnjoysRelics": false,
-      "OpenFaith": false,
-      "ProtectsInnocents": true,
-      "LovesRisk": false
-    },
-
-    "Minthara": {
-      "ValuesMercy": false,
-      "LikesSnark": false,
-      "HatesAuthority": false,
-      "PrefersSubtlety": true,
-      "EnjoysRelics": true,
-      "OpenFaith": false,
-      "ProtectsInnocents": false,
-      "LovesRisk": true
-    }
-  },
-
-  "config": {
-    "_comment": "Game settings - adjust these to change difficulty and behavior",
-    "RequireSuccessScore": 3,
-    "BumpApprovalToMax": true,
-    "EnforceMonogamy": true,
-    "MultiRomanceAllowed": false,
-    "OncePerNight": true
   }
 }
