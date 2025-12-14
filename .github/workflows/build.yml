@@ -17,11 +17,19 @@ jobs:
           path: MyRomanceGuessWho
 
       - name: Download LSLib
+        shell: pwsh
         run: |
           $releases = Invoke-RestMethod -Uri "https://api.github.com/repos/Norbyte/lslib/releases/latest"
           $asset = $releases.assets | Where-Object { $_.name -like "ExportTool-*.zip" } | Select-Object -First 1
+          Write-Host "Downloading: $($asset.browser_download_url)"
           Invoke-WebRequest -Uri $asset.browser_download_url -OutFile lslib.zip
           Expand-Archive -Path lslib.zip -DestinationPath lslib
+          
+          # Find divine.exe
+          Write-Host "LSLib contents:"
+          Get-ChildItem -Path lslib -Recurse -Filter "divine.exe" | ForEach-Object {
+              Write-Host "Found: $($_.FullName)"
+          }
 
       - name: Build PAK
         shell: pwsh
@@ -29,6 +37,15 @@ jobs:
           $MODDIR = "MyRomanceGuessWho"
           $PAKNAME = "MyRomanceGuessWho"
           $META = "$MODDIR/Mods/$PAKNAME/meta.lsx"
+          
+          # Find divine.exe
+          $divine = Get-ChildItem -Path lslib -Recurse -Filter "divine.exe" | Select-Object -First 1
+          if (-not $divine) {
+              Write-Error "divine.exe not found in lslib"
+              exit 1
+          }
+          $divinePath = $divine.FullName
+          Write-Host "Using divine: $divinePath"
           
           Write-Host "Reading metadata from: $META"
           
@@ -58,7 +75,7 @@ jobs:
           
           # Create mod pack
           Write-Host "Creating PAK file..."
-          & ./lslib/divine.exe -g "bg3" --action "create-package" --source "$MODDIR" --destination "$PAKPATH" -l "all"
+          & $divinePath -g "bg3" --action "create-package" --source "$MODDIR" --destination "$PAKPATH" -l "all"
           
           if (-not (Test-Path $PAKPATH)) {
               Write-Error "Failed to create PAK file"
