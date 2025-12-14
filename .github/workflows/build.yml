@@ -34,9 +34,12 @@ jobs:
       - name: Build PAK
         shell: pwsh
         run: |
-          $MODDIR = "MyRomanceGuessWho"
           $PAKNAME = "MyRomanceGuessWho"
-          $META = "$MODDIR/Mods/$PAKNAME/meta.lsx"
+          
+          # Get absolute paths
+          $WORKDIR = (Get-Location).Path
+          $MODDIR = Join-Path $WORKDIR $PAKNAME
+          $META = Join-Path $MODDIR "Mods/$PAKNAME/meta.lsx"
           
           # Find divine.exe
           $divine = Get-ChildItem -Path lslib -Recurse -Filter "divine.exe" | Select-Object -First 1
@@ -47,6 +50,7 @@ jobs:
           $divinePath = $divine.FullName
           Write-Host "Using divine: $divinePath"
           
+          Write-Host "Mod directory: $MODDIR"
           Write-Host "Reading metadata from: $META"
           
           # Parse XML properly to get ModuleInfo section
@@ -69,12 +73,15 @@ jobs:
               exit 1
           }
           
-          # Create temp directory
-          New-Item -ItemType Directory -Path "temp" -Force | Out-Null
-          $PAKPATH = "temp/$PAKNAME.pak"
+          # Create temp directory with absolute path
+          $TEMPDIR = Join-Path $WORKDIR "temp"
+          New-Item -ItemType Directory -Path $TEMPDIR -Force | Out-Null
+          $PAKPATH = Join-Path $TEMPDIR "$PAKNAME.pak"
           
-          # Create mod pack
+          # Create mod pack using absolute paths
           Write-Host "Creating PAK file..."
+          Write-Host "Source: $MODDIR"
+          Write-Host "Destination: $PAKPATH"
           & $divinePath -g "bg3" --action "create-package" --source "$MODDIR" --destination "$PAKPATH" -l "all"
           
           if (-not (Test-Path $PAKPATH)) {
@@ -101,18 +108,20 @@ jobs:
                   }
               )
           }
-          $info | ConvertTo-Json -Depth 3 | Set-Content "temp/info.json"
+          $infoPath = Join-Path $TEMPDIR "info.json"
+          $info | ConvertTo-Json -Depth 3 | Set-Content $infoPath
           
           Write-Host "Created info.json"
-          Get-Content "temp/info.json"
+          Get-Content $infoPath
           
           # Create zip
           Write-Host "Creating zip archive..."
-          Compress-Archive -Path "temp/*" -DestinationPath "$PAKNAME.zip" -Force
+          $ZIPPATH = Join-Path $WORKDIR "$PAKNAME.zip"
+          Compress-Archive -Path "$TEMPDIR/*" -DestinationPath $ZIPPATH -Force
           
           Write-Host ""
           Write-Host "All done!"
-          Get-Item "$PAKNAME.zip" | Format-List Name, Length
+          Get-Item $ZIPPATH | Format-List Name, Length
 
       - name: Upload ZIP artifact
         uses: actions/upload-artifact@v4
