@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          path: MyRomanceGuessWho
 
       - name: Download LSLib
         run: |
@@ -22,41 +24,97 @@ jobs:
           Expand-Archive -Path lslib.zip -DestinationPath lslib
 
       - name: Build PAK
+        shell: bash
         run: |
-          $modName = "MyRomanceGuessWho"
+          set -e
           
-          # Create a temp directory with proper mod structure
-          New-Item -ItemType Directory -Path "pakroot" -Force
+          MODDIR="MyRomanceGuessWho"
+          PAKNAME="MyRomanceGuessWho"
+          META="$MODDIR/Mods/$PAKNAME/meta.lsx"
           
-          # Copy mod files (exclude non-mod files)
-          Copy-Item -Path "Mods" -Destination "pakroot/Mods" -Recurse
-          Copy-Item -Path "Public" -Destination "pakroot/Public" -Recurse
-          Copy-Item -Path "ScriptExtender" -Destination "pakroot/ScriptExtender" -Recurse
-          Copy-Item -Path "Data" -Destination "pakroot/Data" -Recurse
+          echo "Reading metadata from: $META"
           
-          # Create PAK
-          ./lslib/divine.exe -g bg3 -a create-package -s pakroot -d "$modName.pak" -c lz4
-          
-          # Verify
-          if (Test-Path "$modName.pak") {
-            Write-Host "Successfully created $modName.pak"
-            Get-Item "$modName.pak" | Select-Object Name, Length
-          } else {
-            Write-Error "Failed to create PAK file"
-            exit 1
+          # Extract values from meta.lsx
+          extract_attribute() {
+              local attr_id="$1"
+              grep -o "<attribute id=\"$attr_id\"[^>]*value=\"[^\"]*\"" "$META" | head -1 | sed 's/.*value="\([^"]*\)".*/\1/'
           }
+          
+          FOLDERVALUE=$(extract_attribute "Folder")
+          UUIDVALUE=$(extract_attribute "UUID")
+          NAMEVALUE=$(extract_attribute "Name")
+          VERSION=$(extract_attribute "Version64")
+          
+          echo "Folder: $FOLDERVALUE"
+          echo "UUID: $UUIDVALUE"
+          echo "Name: $NAMEVALUE"
+          echo "Version: $VERSION"
+          
+          # Validate folder matches pak name
+          if [ "$FOLDERVALUE" != "$PAKNAME" ]; then
+              echo "Error: Folder mismatch - $PAKNAME vs $FOLDERVALUE"
+              exit 1
+          fi
+          
+          # Create temp directory
+          mkdir -p temp
+          PAKPATH="temp/$PAKNAME.pak"
+          
+          # Create mod pack
+          echo "Creating PAK file..."
+          ./lslib/divine.exe -g "bg3" --action "create-package" --source "$MODDIR" --destination "$PAKPATH" -l "all"
+          
+          if [ ! -f "$PAKPATH" ]; then
+              echo "Error: Failed to create PAK file"
+              exit 1
+          fi
+          
+          echo "PAK created successfully"
+          ls -la "$PAKPATH"
+          
+          # Calculate MD5
+          MD5=$(md5sum "$PAKPATH" | awk '{print $1}')
+          echo "MD5: $MD5"
+          
+          # Create info.json
+          cat > "temp/info.json" << EOF
+          {
+              "mods": [
+                  {
+                      "modName": "$NAMEVALUE",
+                      "UUID": "$UUIDVALUE",
+                      "folderName": "$PAKNAME",
+                      "version": "$VERSION",
+                      "MD5": "$MD5"
+                  }
+              ]
+          }
+          EOF
+          
+          echo "Created info.json"
+          cat temp/info.json
+          
+          # Create zip
+          echo "Creating zip archive..."
+          cd temp
+          7z a "../$PAKNAME.zip" ./*
+          cd ..
+          
+          echo ""
+          echo "All done!"
+          ls -la "$PAKNAME.zip"
 
-      - name: Upload PAK artifact
+      - name: Upload ZIP artifact
         uses: actions/upload-artifact@v4
         with:
           name: MyRomanceGuessWho
-          path: MyRomanceGuessWho.pak
+          path: MyRomanceGuessWho.zip
 
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
-          files: MyRomanceGuessWho.pak
+          files: MyRomanceGuessWho.zip
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
