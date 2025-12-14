@@ -24,85 +24,78 @@ jobs:
           Expand-Archive -Path lslib.zip -DestinationPath lslib
 
       - name: Build PAK
-        shell: bash
+        shell: pwsh
         run: |
-          set -e
+          $MODDIR = "MyRomanceGuessWho"
+          $PAKNAME = "MyRomanceGuessWho"
+          $META = "$MODDIR/Mods/$PAKNAME/meta.lsx"
           
-          MODDIR="MyRomanceGuessWho"
-          PAKNAME="MyRomanceGuessWho"
-          META="$MODDIR/Mods/$PAKNAME/meta.lsx"
+          Write-Host "Reading metadata from: $META"
           
-          echo "Reading metadata from: $META"
+          # Parse XML properly to get ModuleInfo section
+          [xml]$xml = Get-Content $META
+          $moduleInfo = $xml.save.region.node.children.node | Where-Object { $_.id -eq "ModuleInfo" }
           
-          # Extract values from meta.lsx
-          extract_attribute() {
-              local attr_id="$1"
-              grep -o "<attribute id=\"$attr_id\"[^>]*value=\"[^\"]*\"" "$META" | head -1 | sed 's/.*value="\([^"]*\)".*/\1/'
-          }
+          $FOLDERVALUE = ($moduleInfo.attribute | Where-Object { $_.id -eq "Folder" }).value
+          $UUIDVALUE = ($moduleInfo.attribute | Where-Object { $_.id -eq "UUID" }).value
+          $NAMEVALUE = ($moduleInfo.attribute | Where-Object { $_.id -eq "Name" }).value
+          $VERSION = ($moduleInfo.attribute | Where-Object { $_.id -eq "Version64" }).value
           
-          FOLDERVALUE=$(extract_attribute "Folder")
-          UUIDVALUE=$(extract_attribute "UUID")
-          NAMEVALUE=$(extract_attribute "Name")
-          VERSION=$(extract_attribute "Version64")
-          
-          echo "Folder: $FOLDERVALUE"
-          echo "UUID: $UUIDVALUE"
-          echo "Name: $NAMEVALUE"
-          echo "Version: $VERSION"
+          Write-Host "Folder: $FOLDERVALUE"
+          Write-Host "UUID: $UUIDVALUE"
+          Write-Host "Name: $NAMEVALUE"
+          Write-Host "Version: $VERSION"
           
           # Validate folder matches pak name
-          if [ "$FOLDERVALUE" != "$PAKNAME" ]; then
-              echo "Error: Folder mismatch - $PAKNAME vs $FOLDERVALUE"
+          if ($FOLDERVALUE -ne $PAKNAME) {
+              Write-Error "Folder mismatch - $PAKNAME vs $FOLDERVALUE"
               exit 1
-          fi
+          }
           
           # Create temp directory
-          mkdir -p temp
-          PAKPATH="temp/$PAKNAME.pak"
+          New-Item -ItemType Directory -Path "temp" -Force | Out-Null
+          $PAKPATH = "temp/$PAKNAME.pak"
           
           # Create mod pack
-          echo "Creating PAK file..."
-          ./lslib/divine.exe -g "bg3" --action "create-package" --source "$MODDIR" --destination "$PAKPATH" -l "all"
+          Write-Host "Creating PAK file..."
+          & ./lslib/divine.exe -g "bg3" --action "create-package" --source "$MODDIR" --destination "$PAKPATH" -l "all"
           
-          if [ ! -f "$PAKPATH" ]; then
-              echo "Error: Failed to create PAK file"
+          if (-not (Test-Path $PAKPATH)) {
+              Write-Error "Failed to create PAK file"
               exit 1
-          fi
+          }
           
-          echo "PAK created successfully"
-          ls -la "$PAKPATH"
+          Write-Host "PAK created successfully"
+          Get-Item $PAKPATH | Format-List Name, Length
           
           # Calculate MD5
-          MD5=$(md5sum "$PAKPATH" | awk '{print $1}')
-          echo "MD5: $MD5"
+          $MD5 = (Get-FileHash -Path $PAKPATH -Algorithm MD5).Hash.ToLower()
+          Write-Host "MD5: $MD5"
           
           # Create info.json
-          cat > "temp/info.json" << EOF
-          {
-              "mods": [
-                  {
-                      "modName": "$NAMEVALUE",
-                      "UUID": "$UUIDVALUE",
-                      "folderName": "$PAKNAME",
-                      "version": "$VERSION",
-                      "MD5": "$MD5"
+          $info = @{
+              mods = @(
+                  @{
+                      modName = $NAMEVALUE
+                      UUID = $UUIDVALUE
+                      folderName = $PAKNAME
+                      version = $VERSION
+                      MD5 = $MD5
                   }
-              ]
+              )
           }
-          EOF
+          $info | ConvertTo-Json -Depth 3 | Set-Content "temp/info.json"
           
-          echo "Created info.json"
-          cat temp/info.json
+          Write-Host "Created info.json"
+          Get-Content "temp/info.json"
           
           # Create zip
-          echo "Creating zip archive..."
-          cd temp
-          7z a "../$PAKNAME.zip" ./*
-          cd ..
+          Write-Host "Creating zip archive..."
+          Compress-Archive -Path "temp/*" -DestinationPath "$PAKNAME.zip" -Force
           
-          echo ""
-          echo "All done!"
-          ls -la "$PAKNAME.zip"
+          Write-Host ""
+          Write-Host "All done!"
+          Get-Item "$PAKNAME.zip" | Format-List Name, Length
 
       - name: Upload ZIP artifact
         uses: actions/upload-artifact@v4
